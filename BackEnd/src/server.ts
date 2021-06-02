@@ -2,11 +2,9 @@ import express from 'express';
 
 const app = express();
 
-app.get('/', (req, res) => {
-    return res.json({
-        msg: 'Hello World!!',
-        user: 'Juan',
-    });
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.listen(3000);
+require('./controllers/authController')(app);
+
+app.listen(process.env.PORT);
