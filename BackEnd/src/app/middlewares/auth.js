@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 // type Next = () => void | Promise<void>;

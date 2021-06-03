@@ -2,25 +2,19 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "BackEnd do projeto de calendario",
-  "main": "app.js",
+  "main": "src/server.js",
   "author": "JuanMVeronez",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config src/server.js"
+    "dev": "nodemon -r dotenv/config --experimental-modules --es-module-specifier-resolution=node src/server.js"
   },
   "devDependencies": {
     "add": "^2.0.6",
-    "eslint": "7.2.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "2.22.1",
     "nodemon": "^2.0.7",
     "yarn": "^1.22.10"
   },
   "dependencies": {
-    "@babel/cli": "^7.14.3",
-    "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "dotenv": "^10.0.0",
