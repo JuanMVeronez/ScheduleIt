@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-type Next = () => void | Promise<void>;
-
-const authMiddleware = (req: Request, res: Response, next: Next) => {
+// type Next = () => void | Promise<void>;
+// req: Request, res: Response, next: Next
+const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -22,7 +22,7 @@ const authMiddleware = (req: Request, res: Response, next: Next) => {
         return res.status(401).send({ 'error': 'Start scheme error'});
     }
 
-    let secret_hash: string;
+    let secret_hash//: string;
     if (process.env.SECRET_KEY) {
         secret_hash = process.env.SECRET_KEY;
       } else {

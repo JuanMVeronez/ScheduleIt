@@ -3,12 +3,12 @@ import bcrypt from 'bcryptjs';
 
 const Schema = mongoose.Schema;
 
-type userSchemaType = {
-    name: string;
-    email: string;
-    password: string;
-    createdAt: Date;
-}
+// type userSchemaType = {
+//     name: string;
+//     email: string;
+//     password: string;
+//     createdAt: Date;
+// }
 
 const UserSchema = new Schema<userSchemaType>({
     name : {

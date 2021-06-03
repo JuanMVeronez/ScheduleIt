@@ -1,7 +1,7 @@
 require('dotenv').config();
 import mongoose from 'mongoose';
 
-let mongoConnection: string;
+let mongoConnection//: string;
 
 if (process.env.MONGO_URL) {
   mongoConnection = process.env.MONGO_URL;

@@ -9,7 +9,7 @@ import User from '../models/user';
 const router = express.Router();
 
 function generateToken(parm = {}) {
-    let secret_hash: string;
+    let secret_hash//: string;
     if (process.env.SECRET_KEY) {
         secret_hash = process.env.SECRET_KEY;
       } else {
@@ -121,4 +121,4 @@ router.post('/reset_password', async (req, res) => {
     }
 });
 
-module.exports = (app: express.Application) => app.use('/auth', router)
+export default router;
