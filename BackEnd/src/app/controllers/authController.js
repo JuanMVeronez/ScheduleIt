@@ -9,14 +9,7 @@ import User from '../models/user';
 const router = express.Router();
 
 function generateToken(parm = {}) {
-    let secret_hash//: string;
-    if (process.env.SECRET_KEY) {
-        secret_hash = process.env.SECRET_KEY;
-      } else {
-        throw new Error("Secret hash environment variable is not set")
-    }
-
-    const token = jwt.sign(parm, secret_hash, {
+    const token = jwt.sign(parm, process.env.SECRET_KEY, {
         expiresIn: 60 * 60 * 24 // one day
     })
     return token
@@ -29,7 +22,11 @@ router.post('/register', async (req, res) => {
         if(await User.findOne({email})) 
             return res.status(400).send({error: 'Email already registreded'})
 
-        const user = await User.create(req.body);
+        const user = await User.create({
+            name: `${req.body.name} ${req.body.lastName}`,
+            email: req.body.email,
+            password: req.body.password,
+        });
 
         user.password = undefined
         
@@ -61,7 +58,7 @@ router.post('/authentication', async (req, res) => {
     });
 });
 
-router.post('/forgot_password', async (req, res) => {
+router.post('/forgot-password', async (req, res) => {
     const { email } = req.body
 
     try {
@@ -95,7 +92,7 @@ router.post('/forgot_password', async (req, res) => {
     }
 });
 
-router.post('/reset_password', async (req, res) => {
+router.post('/reset-password', async (req, res) => {
     const { email, token, password } = req.body;
     
     try{
@@ -120,5 +117,42 @@ router.post('/reset_password', async (req, res) => {
         res.status(400).send({ error: 'Error on reset password, try again'})
     }
 });
+
+router.post('/pick-user', async (req, res) => {
+    const { token } = req.body;
+
+    let id;
+    
+    try {
+        if (!token) {
+            return res.status(401).send({ 'error': 'No token provided'});
+        }
+    
+        const parts = token.split(' ');
+    
+        if (parts.length !== 2) {
+            return res.status(401).send({ 'error': 'Token format error'});
+        }
+    
+        const [ scheme, tokenParsed] = parts;
+    
+        if (!/^Bearer$/i.test(scheme)) {
+            return res.status(401).send({ 'error': 'Start scheme error'});
+        }
+    
+        jwt.verify(tokenParsed, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return res.status(401).send({ 'error': 'Invalid token'});
+            }
+            id = decoded.id;
+        });
+
+        const user = await User.findById(id);
+
+        res.send({user});
+    } catch (err) {
+        res.status(400).send({ error: 'Error on pick user, try again'})
+    }
+})
 
 export default router;

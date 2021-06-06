@@ -27,6 +27,9 @@ const UserSchema = new Schema({
         type: Date,
         select: false,
     },
+    eventsCorrelated: {
+        type: Object,
+    },
     createdAt: {
         type: Date,
         default: Date.now()

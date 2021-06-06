@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-// type Next = () => void | Promise<void>;
-// req: Request, res: Response, next: Next
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -21,14 +19,7 @@ const authMiddleware = (req, res, next) => {
         return res.status(401).send({ 'error': 'Start scheme error'});
     }
 
-    let secret_hash//: string;
-    if (process.env.SECRET_KEY) {
-        secret_hash = process.env.SECRET_KEY;
-      } else {
-        throw new Error("Secret hash environment variable is not set")
-    }
-
-    jwt.verify(token, secret_hash, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if (err) {
             return res.status(401).send({ 'error': 'Invalid token'});
         }
