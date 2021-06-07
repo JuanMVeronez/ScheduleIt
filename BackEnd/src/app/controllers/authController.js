@@ -118,9 +118,11 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-router.post('/pick-user', async (req, res) => {
-    const { token } = req.body;
-
+router.get('/pick-user', async (req, res) => {
+    let { token } = (!req.headers.authorization) && (req.body) 
+    
+    if (token === undefined ) token = req.headers.authorization
+    
     let id;
     
     try {

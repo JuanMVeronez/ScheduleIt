@@ -6,7 +6,6 @@ import GlobalStyle from './styles/global';
 
 ReactDOM.render(
   <React.StrictMode>
-    {console.log('this work')}
     <App />
     <GlobalStyle />
   </React.StrictMode>,

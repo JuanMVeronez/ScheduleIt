@@ -1,17 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { ReactSVG } from 'react-svg'
 
-
+import { HeaderSchedule } from './style';
 import api from '../../../server/api';
 import { Context } from '../../../Context/AuthContext';
 import Schedule from '../../../components/schedule';
 
 export default function Users() {
-  const { handleLogout} = useContext(Context);
+  const { handleLogout } = useContext(Context);
   const [currentEvents, setCurrentEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
-  
+  const [currentUser, setCurrentUser] = useState({});
+
   useEffect(() => {
-    
+    try {
+      (async () => {
+        console.log('try to pick')
+        await api.get('/auth/pick-user').then((resp, err) => {
+          setCurrentUser(resp.data.user);
+        })
+      })()
+    } catch (err) {
+      console.log(err);
+    }
     try {
       (async () => {
         await api.get('/project/event').then((resp, err) => {
@@ -38,7 +49,7 @@ export default function Users() {
                 moreDetails
               };
             });
-          
+
           setCurrentEvents(editedresp);
           setLoadingEvents(false);
         });
@@ -49,19 +60,31 @@ export default function Users() {
     }
 
   }, [])
-
-  console.log(currentEvents)
   const now = new Date()
-  if (!loadingEvents){
-  return (
-    <>
-      <button type="button" onClick={handleLogout}>Sair</button>
-      <Schedule schedulerEvents={currentEvents} currentDate={now}/>
+  if (!loadingEvents) {
+    return (
+      <>
+        <HeaderSchedule>
+          <div>
+            <ReactSVG src="schedule.svg"
+              style={{
+                display: 'inline-block',
+                width: '80px',
+                height: '80px',
+              }}
+            />
+            <h2>Schedule It </h2>
+          </div>
+          <p><span>{currentUser.name}</span>, qual seu próximo plano?</p>
+          <button type="button" onClick={handleLogout}>Sair</button>
+        </HeaderSchedule>
 
-    </>)
-    }
-    else {
-      return (<h1>Loading...</h1>)
-    }
+        <Schedule schedulerEvents={currentEvents} currentDate={now} />
+
+      </>)
+  }
+  else {
+    return (<h1>Loading...</h1>)
+  }
 }
 
