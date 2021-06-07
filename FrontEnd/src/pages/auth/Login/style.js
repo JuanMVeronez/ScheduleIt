@@ -52,7 +52,7 @@ export const LoginForm = styled.form`
         border-radius: 6px;
         
         color: #444444;
-        padding: 0.5rem 0 0.5rem 0.5rem;
+        padding: .5rem 0;
     }
 
     input:focus {

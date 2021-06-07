@@ -3,33 +3,40 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const eventSchema = new Schema({
-    creatorId: {
+    userId: String,
+    event: {creatorId: {
         type: String,
         require: true,
     },
-    eventTitle: {
+    title: {
         type: String,
-        require: true,
+        unique: true,
     },
-    eventDisc: {
+    moreDetails: {
         type: String,
     },
-    start: {
-        type: Date,
+    startDate: {
+        type: Number,
         require: true
     },
-    end : {
-        type: Date,
+    endDate : {
+        type: Number,
     },
     allDay: {
         type: Boolean,
     },
-    guests: {
+    members: {
         type: Array,
+    },
+    eventType: {
+        type: String,
+    },
+    rRule: {
+        type: String,
     },
     guestsAccepted: {
         type: Array,
-    },
+    }},
 });
 
 const SchEvent = mongoose.model('SchEvent', eventSchema);

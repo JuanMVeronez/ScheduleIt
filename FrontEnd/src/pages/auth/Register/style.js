@@ -45,7 +45,7 @@ export const RegisterForm = styled.form`
         border-radius: 6px;
         
         color: #444444;
-        padding: 0.5rem 0 0.5rem 0.5rem;
+        padding: .5rem 0;
     }
 
     input:focus {
@@ -54,7 +54,7 @@ export const RegisterForm = styled.form`
 
     button {
 
-        margin: 3.5rem auto 0 auto;
+        margin: 1.5rem auto 0 auto;
         padding: 0.8rem 4rem;
         border: 1px solid;
         border-radius: 5px;
@@ -64,8 +64,6 @@ export const RegisterForm = styled.form`
         font-size: 1.1rem;
 
         background-color: #e17055dd;
-
-        transition: background-color 0.5s;
     }
 
     button:hover {
@@ -89,6 +87,12 @@ export const RegisterForm = styled.form`
 
     p:last-child {
         text-align: center;
+    }
+
+    span {
+        font-size: 0.7rem;
+        color: #666666;
+        
     }
 `;
 

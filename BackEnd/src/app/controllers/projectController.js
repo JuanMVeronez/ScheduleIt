@@ -13,34 +13,18 @@ router.get('/', async (req, res) => {
 
 // CRUD event
 router.post('/event', async (req, res) => {
-    const { 
-        eventTitle,
-        eventDisc,
-        allDay,
-        guests,
-        guestsAccepted,
-    } = req.body;
-    
-    let start = new Date();
-    let end; 
-    
-    if (allDay) {
-        start = start.getTime();
-    } else {
-        end = new Date().setHours(start.getHours() + 1);
-    }
+    req.session.flag = 0
+
+    const reqTitle = req.body.title;
+
+    if(await SchEvent.findOne({reqTitle})) 
+            return res.status(200)
+
+    const gettedEvent = {event :req.body, userId: req.userId}
+    console.log('req feita')
 
     try {
-        const newEvent = await SchEvent.create({
-            creatorId: req.userId,
-            eventTitle,
-            eventDisc,
-            start,
-            end,
-            allDay,
-            guests,
-            guestsAccepted,
-        });
+        const newEvent = await SchEvent.create(gettedEvent);
 
         return res.send(newEvent);
     } catch (err) {
@@ -50,7 +34,8 @@ router.post('/event', async (req, res) => {
 
 router.get('/event', async (req, res) => {
     const { userId } = req.userId;
-    const eventsWithUser = await SchEvent.find({guests : userId}).select();
+    const eventsWithUser = await SchEvent.find({userId:  req.userId}).select();
+
     res.send(eventsWithUser);
 })
 

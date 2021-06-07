@@ -6,7 +6,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 // Private routes
-import Users from './pages/home/Users';
+import Users from './pages/home/Schedule';
 
 
 import { Context } from './Context/AuthContext';
