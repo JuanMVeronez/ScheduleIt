@@ -27,6 +27,7 @@ import {
 
 } from '@devexpress/dx-react-scheduler-material-ui';
 
+import formatEvent from './Schedule/eventsToApiFormat';
 import api from '../server/api';
 import {
     TextEditor,
@@ -119,40 +120,20 @@ export default class Schedule extends React.PureComponent {
         this.setState((state) => {
             let { data } = state;
             if (added) {
-                const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
-                data = [...data, { id: startingAddedId, ...added }];
+                const editedAdded = formatEvent(this.sendEventId,added);
 
-                const editedAdded = (({
-                        startDate, 
-                        endDate, 
-                        allDay,
-                        members,
-                        eventType,
-                        title,
-                        rRule,
-                        moreDetails
-                    }) => {
-                    return {
-                        id: this.sendEventId(),
-                        startDate: startDate.getTime(),
-                        endDate: endDate.getTime(),
-                        allDay,
-                        moreDetails,
-                        members,
-                        eventType,
-                        title,
-                        rRule,
-                }})(added)
-                
-                if (editedAdded.id % 2 === 0) return   
-                
+                if (editedAdded.id % 2 === 0) return;   
                 try {
-                (async () => {
+                    (async () => {
                         await api.post('/project/event', editedAdded)
-                })()
+                        
+                    })()
                 } catch (err) {
                     console.log(err);
                 }
+
+                const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
+                data = [...data, { id: startingAddedId, ...added }];
 
             }
             if (changed) {
@@ -160,6 +141,11 @@ export default class Schedule extends React.PureComponent {
                     changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment));
             }
             if (deleted !== undefined) {
+                (async () => {
+                    try{
+                        await api.delete('/project/event', {data : {eventId: deleted}})
+                    } catch (err) {console.log(err);}
+                })()
                 data = data.filter(appointment => appointment.id !== deleted);
             }
             return { data };

@@ -39,8 +39,13 @@ router.get('/event', async (req, res) => {
 
 router.delete('/event', async (req, res) => {
     const {eventId} = req.body;
+    
+    if (!eventId) res.status(400).send({error: 'Id not sended'}) 
+    console.log('Id: ', eventId)
+    
     const eventDeleted = await SchEvent.findByIdAndDelete(eventId);
-
+    if (!eventDeleted) res.status(400).send({error: 'Event not found'});
+    
     res.send(eventDeleted);
 })
 
