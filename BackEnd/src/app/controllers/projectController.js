@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
 
 // CRUD event
 router.post('/event', async (req, res) => {
-    req.session.flag = 0
 
     const reqTitle = req.body.title;
 
@@ -21,7 +20,6 @@ router.post('/event', async (req, res) => {
             return res.status(200)
 
     const gettedEvent = {event :req.body, userId: req.userId}
-    console.log('req feita')
 
     try {
         const newEvent = await SchEvent.create(gettedEvent);
@@ -33,7 +31,7 @@ router.post('/event', async (req, res) => {
 })
 
 router.get('/event', async (req, res) => {
-    const { userId } = req.userId;
+    
     const eventsWithUser = await SchEvent.find({userId:  req.userId}).select();
 
     res.send(eventsWithUser);

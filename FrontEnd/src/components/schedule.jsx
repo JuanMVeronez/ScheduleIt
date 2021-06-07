@@ -34,7 +34,6 @@ import {
     appointmentComponent,
     messages,
     allowDrag,
-    appointments,
     resources
 } from './Schedule/scheduleContext'
 
@@ -42,6 +41,12 @@ export default class Schedule extends React.PureComponent {
     
     constructor(props) {
         super(props);
+        
+        this.eventId = 0
+        this.sendEventId = () => {
+            this.eventId += 1;
+            return this.eventId;
+        };
 
         this.state = {
             mainResourceName: 'eventType',
@@ -65,12 +70,6 @@ export default class Schedule extends React.PureComponent {
         };
         
         this.changeMainResource = this.changeMainResource.bind(this);
-
-        this.changeViewId = () => {
-            this.setState({
-                addedEvents: this.state.addedEvents + 1,
-            })
-        }
 
         this.handleUpdateIntervalChange = (nextValue) => {
             this.setState({
@@ -134,7 +133,7 @@ export default class Schedule extends React.PureComponent {
                         moreDetails
                     }) => {
                     return {
-                        id: Math.random().toString(36).substr(2, 9),
+                        id: this.sendEventId(),
                         startDate: startDate.getTime(),
                         endDate: endDate.getTime(),
                         allDay,
@@ -144,8 +143,9 @@ export default class Schedule extends React.PureComponent {
                         title,
                         rRule,
                 }})(added)
-               
-                console.log(editedAdded)
+                
+                if (editedAdded.id % 2 === 0) return   
+                
                 try {
                 (async () => {
                         await api.post('/project/event', editedAdded)
