@@ -1,4 +1,4 @@
-export default function formatEvent(getId, {
+export function formatEvent(id, {
     startDate,
     endDate,
     allDay,
@@ -9,14 +9,16 @@ export default function formatEvent(getId, {
     moreDetails
 }) {
     return {
-        id: getId(),
-        startDate: startDate.getTime(),
-        endDate: endDate.getTime(),
-        allDay,
-        moreDetails,
-        members,
-        eventType,
-        title,
-        rRule,
+        id,
+        event: {
+            startDate: startDate ? startDate.getTime() : startDate,
+            endDate: endDate ? endDate.getTime() : endDate,
+            allDay,
+            moreDetails,
+            members,
+            eventType,
+            title,
+            rRule,
+        }
     }
 }

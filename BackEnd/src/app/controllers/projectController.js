@@ -13,14 +13,8 @@ router.get('/', async (req, res) => {
 
 // CRUD event
 router.post('/event', async (req, res) => {
-
-    const reqTitle = req.body.title;
-
-    if(await SchEvent.findOne({reqTitle})) 
-            return res.status(200)
-
     const gettedEvent = {event :req.body, userId: req.userId}
-
+    
     try {
         const newEvent = await SchEvent.create(gettedEvent);
 
@@ -41,49 +35,26 @@ router.delete('/event', async (req, res) => {
     const {eventId} = req.body;
     
     if (!eventId) res.status(400).send({error: 'Id not sended'}) 
-    console.log('Id: ', eventId)
     
-    const eventDeleted = await SchEvent.findByIdAndDelete(eventId);
-    if (!eventDeleted) res.status(400).send({error: 'Event not found'});
-    
-    res.send(eventDeleted);
+    await SchEvent.findByIdAndDelete(eventId).then((doc, err) => {
+        res.send(doc);
+    })
+    res.send();
 })
 
 router.patch('/event', async (req, res) => {
-    const { 
-        eventId,
-        eventTitle,
-        eventDisc,
-        allDay,
-        guests,
-        guestsAccepted,
-    } = req.body;
-    
-    let start = new Date();
-    let end; 
-    
-    if (allDay) {
-        start = start.getTime();
-    } else {
-        end = new Date().setHours(start.getHours() + 1);
-    }
+    const gettedEvent = req.body.event
+    const eventId = req.body.id
+    const oldEvent = await SchEvent.findById(eventId);
 
-    try {
-        await SchEvent.findByIdAndUpdate(eventId,{
-            creatorId: req.userId,
-            eventTitle,
-            eventDisc,
-            start,
-            end,
-            allDay,
-            guests,
-            guestsAccepted,
-        });
+    const margedEvent = ({ ...oldEvent.event, ...gettedEvent });
 
-        const eventChanged = await SchEvent.findById(eventId)
+    try {    
+        const eventChanged = await SchEvent.findByIdAndUpdate(eventId, {event: margedEvent}, {new: true});
         
         return res.send(eventChanged);
     } catch (err) {
+        console.log(err)
         return res.status(400).send({ 'error': 'event not created, try again' });
     }
 })

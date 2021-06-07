@@ -27,7 +27,7 @@ import {
 
 } from '@devexpress/dx-react-scheduler-material-ui';
 
-import formatEvent from './Schedule/eventsToApiFormat';
+import { formatEvent } from './Schedule/eventsToApiFormat';
 import api from '../server/api';
 import {
     TextEditor,
@@ -39,10 +39,10 @@ import {
 } from './Schedule/scheduleContext'
 
 export default class Schedule extends React.PureComponent {
-    
+
     constructor(props) {
         super(props);
-        
+
         this.eventId = 0
         this.sendEventId = () => {
             this.eventId += 1;
@@ -53,7 +53,7 @@ export default class Schedule extends React.PureComponent {
             mainResourceName: 'eventType',
 
             resources: resources,
-            
+
             data: props.schedulerEvents,
             currentDate: props.now,
 
@@ -69,7 +69,7 @@ export default class Schedule extends React.PureComponent {
 
             addedEvents: 0,
         };
-        
+
         this.changeMainResource = this.changeMainResource.bind(this);
 
         this.handleUpdateIntervalChange = (nextValue) => {
@@ -116,40 +116,57 @@ export default class Schedule extends React.PureComponent {
         this.setState({ editingAppointment });
     }
 
-    commitChanges({ added, changed, deleted }) {
-        this.setState((state) => {
-            let { data } = state;
-            if (added) {
-                const editedAdded = formatEvent(this.sendEventId,added);
+    async commitChanges({ added, changed, deleted }) {
+        if (added) {
+            const editedAdded = formatEvent(this.sendEventId(), added);
 
-                if (editedAdded.id % 2 === 0) return;   
-                try {
-                    (async () => {
-                        await api.post('/project/event', editedAdded)
-                        
-                    })()
-                } catch (err) {
-                    console.log(err);
-                }
-
+            if (editedAdded.id % 2 === 0) return;
+            try {
+                await api.post('/project/event', editedAdded.event).then((doc, err) => {
+                    added.id = doc.data._id;
+                })
+            } catch (err) {
+                console.log(err);
+            }
+            this.setState(({ data }) => {
                 const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
                 data = [...data, { id: startingAddedId, ...added }];
 
+                return { data };
+            })
+        }
+
+
+        if (changed) {
+            const editedChanged = formatEvent(Object.keys(changed)[0], Object.values(changed)[0]);
+
+            try {
+                await api.patch('/project/event', editedChanged);
+            } catch (err) {
+                console.log(err);
             }
-            if (changed) {
+
+            this.setState(({ data }) => {
                 data = data.map(appointment => (
                     changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment));
-            }
-            if (deleted !== undefined) {
-                (async () => {
-                    try{
-                        await api.delete('/project/event', {data : {eventId: deleted}})
-                    } catch (err) {console.log(err);}
-                })()
+
+                return { data };
+            });
+        }
+
+        if (deleted !== undefined) {
+            (async () => {
+                try {
+                    await api.delete('/project/event', { data: { eventId: deleted } })
+                } catch (err) { console.log(err); }
+            })()
+            this.setState(({ data }) => {
                 data = data.filter(appointment => appointment.id !== deleted);
-            }
-            return { data };
-        });
+                return { data };
+            })
+        }
+
+
     }
     render() {
         const {

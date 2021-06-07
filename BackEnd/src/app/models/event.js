@@ -6,18 +6,15 @@ const eventSchema = new Schema({
     userId: String,
     event: {creatorId: {
         type: String,
-        require: true,
     },
     title: {
         type: String,
-        unique: true,
     },
     moreDetails: {
         type: String,
     },
     startDate: {
         type: Number,
-        require: true
     },
     endDate : {
         type: Number,
